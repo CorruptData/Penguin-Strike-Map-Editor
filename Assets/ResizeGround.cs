@@ -6,7 +6,6 @@ public class ResizeGround : MonoBehaviour {
 
     private float sizeX = 2.2f;
     private float sizeZ = 2.2f;
-    private int a = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -15,7 +14,7 @@ public class ResizeGround : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     public void ResizeWidth (string s)

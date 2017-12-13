@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonListener : MonoBehaviour {
 
@@ -9,14 +10,13 @@ public class ButtonListener : MonoBehaviour {
 
     }
 
-    void TaskOnClick()
+    void Update()
     {
-        Debug.Log("You have clicked the button!");
-    }
-
-    public void NewScriptTestASSSS ()
-    {
-        Debug.Log("You have clicked the button!");
-
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            GameObject toggleObj = GameObject.Find("Toggle");
+            var tick = toggleObj.GetComponent<Toggle>();
+            tick.isOn = !tick.isOn;
+        }
     }
 }

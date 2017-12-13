@@ -26,10 +26,10 @@ public class KeyboardMove : MonoBehaviour {
             transform.position -= Camera.main.transform.forward * movementSpeed * Time.deltaTime;
 
         if (Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.Space))
-            transform.position += Camera.main.transform.up * movementSpeed * Time.deltaTime;
+            transform.position += new Vector3(0, movementSpeed * Time.deltaTime, 0);
 
         if (Input.GetKey(KeyCode.E))
-            transform.position -= Camera.main.transform.up * movementSpeed * Time.deltaTime;
+            transform.position -= new Vector3(0, movementSpeed * Time.deltaTime, 0);
 
     }
 }
