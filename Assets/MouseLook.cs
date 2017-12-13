@@ -4,7 +4,8 @@ using UnityEngine;
 public class MouseLook : MonoBehaviour
 {
     public float mouseSensitivity = 100.0f;
-    public float clampAngle = 80.0f;
+    //Max angle to look
+    public float clampAngle = 90.0f;
 
     private float rotY = 0.0f; // rotation around the up/y axis
     private float rotX = 0.0f; // rotation around the right/x axis
@@ -21,8 +22,14 @@ public class MouseLook : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
+            if (!toggleMove)
+                Cursor.lockState = CursorLockMode.Locked;
+            else
+                Cursor.lockState = CursorLockMode.None;
+
             toggleMove = !toggleMove;
         }
+
         if (toggleMove)
         {
             float mouseX = Input.GetAxis("Mouse X");

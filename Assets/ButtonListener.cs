@@ -10,8 +10,12 @@ public class ButtonListener : MonoBehaviour {
 
     }
 
+    //This area is for testing things
+    //Pay no mind
     void Update()
     {
+        //Toggle the fill tool
+        //TODO: Move to a script on the toggle box
         if (Input.GetKeyDown(KeyCode.F))
         {
             GameObject toggleObj = GameObject.Find("Toggle");

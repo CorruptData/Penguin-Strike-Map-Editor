@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class EnterText : MonoBehaviour {
 
-	// Use this for initialization
+	//UNUSED
 	void Start () {
 		
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}

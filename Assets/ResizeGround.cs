@@ -17,6 +17,7 @@ public class ResizeGround : MonoBehaviour {
 
 	}
 
+    //Set the width (East-West)
     public void ResizeWidth (string s)
     {
         int x = 0;
@@ -29,6 +30,7 @@ public class ResizeGround : MonoBehaviour {
         }
     }
 
+    //Set the height (North-South)
     public void ResizeHeight (string s)
     {
         int z = 0;
