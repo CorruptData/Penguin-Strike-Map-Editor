@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using Codes.Linus.IntVectors;
 
 public class BlockPlacer : MonoBehaviour
 {
@@ -189,7 +190,7 @@ public class BlockPlacer : MonoBehaviour
 
         Block wblock = new Block(){
             material = blockMaterial,
-            coords = block.transform.position,
+            coords = (Vector3i)placeAt,
         };
 
         saveObjects.Add(wblock);
@@ -299,12 +300,13 @@ public class BlockPlacer : MonoBehaviour
     }
 }
 
+
 //Data for saving for each block
 [Serializable]
 public class Block
 {
     public string material;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 [Serializable]
@@ -312,7 +314,7 @@ public class Ramp
 {
     public string material;
     public string direction;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 [Serializable]
@@ -320,7 +322,7 @@ public class Rampart
 {
     public string material;
     public string direction;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 [Serializable]
@@ -329,21 +331,21 @@ public class Turret
     public string size;
     public string direction;
     public string team;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 [Serializable]
 public class Fire
 {
     public string team;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 [Serializable]
 public class Spawn
 {
     public string team;
-    public Vector3 coords;
+    public Vector3i coords;
 }
 
 //Map data + blocks
