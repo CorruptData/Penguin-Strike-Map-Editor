@@ -14,7 +14,7 @@ public class BlockPlacer : MonoBehaviour
 
     //Current block data
     private int materialTest = 0;
-    private string blockMaterial = "Steel";
+    private string blockMaterial = "Dirt";
     private string blockShape = "Cube";
     private string blockDirection = "";
     private string blockSize = "";
@@ -68,7 +68,7 @@ public class BlockPlacer : MonoBehaviour
             {
                 blockMaterial = "OilEmitterBox";
                 blockShape = "";
-                materialTest++;
+                materialTest = 0;
             }
          }
 
