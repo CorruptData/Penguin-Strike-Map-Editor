@@ -14,11 +14,23 @@ public class BlockPlacer : MonoBehaviour
     public GameObject blockPrefab;
 
     //Current block data
-    private int materialTest = 0;
+    private int primary = 0;
+    private string[] sec;
+    private int secondary = 0;
     private string blockMaterial = "Dirt";
     private string blockShape = "Cube";
     private string blockDirection = "";
     private string blockSize = "";
+
+    private string[] _shape = { "Cube", "Ramp", "Rampart", "Turret", "Fire", "Spawn" };
+    private string[] _material = { "Dirt", "Wood", "Steel" };
+    private string[] _size = { "Small", "Medium", "Large" };
+    private string[] _team = { "USA", "USSR" };
+    private string[] _direction = { "N", "E", "S", "W" };
+
+    private Dictionary<string, string[]> blocks;
+
+    private Map CurrentMap = new Map();
 
     //These keep track of the blocks
     private ArrayList gameObjects = new ArrayList();
@@ -41,7 +53,17 @@ public class BlockPlacer : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
-    }
+
+        blocks = new Dictionary<string, string[]>()
+        {
+            { "Cube", _material },
+            { "Ramp", _material },
+            { "Rampart", _material },
+            { "Turret", _size },
+            { "Fire", _team },
+            { "Spawn", _team }
+        };
+}
 
     void Update()
     {
@@ -49,29 +71,13 @@ public class BlockPlacer : MonoBehaviour
         //TODO: Implement fully and properly
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            if(materialTest == 0)
-            {
-                blockMaterial = "Dirt";
-                blockShape = "Cube";
-                materialTest++;
-            }
-            else if(materialTest == 1)
-            {
-                blockMaterial = "Wood";
-                materialTest++;
-            }
-            else if(materialTest == 2)
-            {
-                blockMaterial = "Steel";
-                materialTest++;
-            }
-            else
-            {
-                blockMaterial = "OilEmitterBox";
-                blockShape = "";
-                materialTest = 0;
-            }
-         }
+            
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+
+        }
 
         //Locks the cursor. Running this in update is only done because of weird unity editor shenanigans with cursor locking
         if (Input.GetKeyDown(KeyCode.C))
@@ -82,83 +88,13 @@ public class BlockPlacer : MonoBehaviour
         //Place blocks using the LMB
         if (Input.GetMouseButtonDown(0) && lockCursor)
         {
-            //Make a ray and raycasthit for a raycast
-            Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
-            RaycastHit hit;
-
-            //Perform the raycast
-            if (Physics.Raycast(ray, out hit, range))
-            {
-                //The raycast is backed up so that placing works and won't place blocks inside of the ground.
-                //After testing, 0.2 units back had the best result
-                Vector3 backup = ray.GetPoint(hit.distance - 0.2f);
-
-                //Round the placement so they place like blocks should
-                Vector3 placeAt = new Vector3(
-                    Mathf.RoundToInt(backup.x), 
-                    Mathf.RoundToInt(backup.y), 
-                    Mathf.RoundToInt(backup.z));
-                
-                if (!fill)
-                {
-                    //Place block
-                    CreateBlock(placeAt);
-                }
-                else
-                {
-                    if (!secondFill)
-                    {
-                        //Place block, and prepare to fill the area
-                        CreateBlock(placeAt);
-                        //Flag for the fill tool
-                        secondFill = true;
-                    }
-                    else
-                    {
-                        //Fill the area between the previous block placed and the place clicked
-                        GameObject previous = (GameObject) gameObjects[gameObjects.Count-1];
-                        Vector3 second = previous.transform.position;
-
-                        FillRegion(placeAt, second);
-
-                        secondFill = false;
-                    }
-                }
-            }
+            LMB();
         }
 
         //Right click to remove a block
         else if (Input.GetMouseButtonDown(1) && lockCursor)
-        {            
-            //Make a ray and raycasthit for a raycast
-            Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
-            RaycastHit hit;
-
-            //Perform the raycast
-            if (Physics.Raycast(ray, out hit, range))
-            {
-                //The raycast is backed up so that placing works and won't place blocks inside of the ground.
-                //After testing, 0.2 units back had the best result
-                Vector3 backup = ray.GetPoint(hit.distance + 0.2f);
-
-                //Round the placement so they place like blocks should
-                Vector3 removeAt = new Vector3(
-                    Mathf.RoundToInt(backup.x),
-                    Mathf.RoundToInt(backup.y),
-                    Mathf.RoundToInt(backup.z));
-
-                int i = 0;
-
-                foreach (GameObject blk in gameObjects)
-                {
-                    if (removeAt == blk.transform.position)
-                    {
-                        RemoveBlock(i);
-                        break;
-                    }
-                    i++;
-                }
-            }
+        {
+            RMB();
         }
     }
 
@@ -175,25 +111,147 @@ public class BlockPlacer : MonoBehaviour
         secondFill = false;
     }
 
+    // Changes the thing being placed
+    // e.g. Cubes, Turrets, and Fires
+    private void ChangePrimary ()
+    {
+        primary++;
+
+        //if (primary >= _shape.Length)
+        if (primary >= 1)
+        {
+            primary = 0;
+        }
+        blockShape = _shape[primary];
+        sec = blocks[blockShape];
+
+        if (secondary >= sec.Length)
+        {
+            secondary = sec.Length - 1;
+        }
+
+        blockMaterial = sec[secondary];
+    }
+
+    // Changes the material/size of the thing being placed
+    // E.g. Dirt Cubes, Steel Ramps, and Large Turrets
+    private void ChangeSecondary ()
+    {
+        secondary++;
+
+        if (secondary >= sec.Length)
+        {
+            secondary = 0;
+        }
+
+        blockMaterial = sec[secondary];
+    }
+
+    // Action on left mouse button
+    // Place blok
+    private void LMB ()
+    {
+        //Make a ray and raycasthit for a raycast
+        Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
+        RaycastHit hit;
+
+        //Perform the raycast
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            //The raycast is backed up so that placing works and won't place blocks inside of the ground.
+            //After testing, 0.2 units back had the best result
+            Vector3 backup = ray.GetPoint(hit.distance - 0.2f);
+
+            //Round the placement so they place like blocks should
+            Vector3 placeAt = new Vector3(
+                Mathf.RoundToInt(backup.x),
+                Mathf.RoundToInt(backup.y),
+                Mathf.RoundToInt(backup.z));
+
+            if (!fill)
+            {
+                //Place block
+                CreateBlock(placeAt);
+            }
+            else
+            {
+                if (!secondFill)
+                {
+                    //Place block, and prepare to fill the area
+                    CreateBlock(placeAt);
+                    //Flag for the fill tool
+                    secondFill = true;
+                }
+                else
+                {
+                    //Fill the area between the previous block placed and the place clicked
+                    GameObject previous = (GameObject)gameObjects[gameObjects.Count - 1];
+                    Vector3 second = previous.transform.position;
+
+                    FillRegion(placeAt, second);
+
+                    secondFill = false;
+                }
+            }
+        }
+    }
+    
+    // Action on richt mouse button
+    // Removes blocks
+    private void RMB ()
+    {
+        //Make a ray and raycasthit for a raycast
+        Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
+        RaycastHit hit;
+
+        //Perform the raycast
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            //The raycast is backed up so that placing works and won't place blocks inside of the ground.
+            //After testing, 0.2 units back had the best result
+            Vector3 backup = ray.GetPoint(hit.distance + 0.2f);
+
+            //Round the placement so they place like blocks should
+            Vector3 removeAt = new Vector3(
+                Mathf.RoundToInt(backup.x),
+                Mathf.RoundToInt(backup.y),
+                Mathf.RoundToInt(backup.z));
+
+            int i = 0;
+
+            foreach (GameObject blk in gameObjects)
+            {
+                if (removeAt == blk.transform.position)
+                {
+                    RemoveBlock(i);
+                    break;
+                }
+                i++;
+            }
+        }
+    }
+
     //Create a block at the given location
     //Uses the block type class-wide
     private void CreateBlock(Vector3 placeAt)
     {
-        blockPrefab = Resources.Load("Prefabs/" + blockMaterial + blockShape + blockDirection, typeof(GameObject)) as GameObject;
-        //Instantiate the block and save it so that we can do other stuff with it later
-        GameObject block = (GameObject)GameObject.Instantiate(blockPrefab, placeAt, Quaternion.Euler(Vector3.zero));
+
         if (blockShape == "Cube")
         {
+            blockPrefab = Resources.Load("Prefabs/" + blockMaterial + blockShape, typeof(GameObject)) as GameObject;
 
+            Block b = new Block()
+            {
+                material = blockMaterial,
+                coords = (Vector3i)placeAt,
+            };
+            CurrentMap.Blocks.Add(b);
         }
+
+        //Instantiate the block and save it so that we can do other stuff with it later
+        GameObject block = (GameObject)GameObject.Instantiate(blockPrefab, placeAt, Quaternion.Euler(Vector3.zero));
+
         gameObjects.Add(block);
-
-        Block wblock = new Block(){
-            material = blockMaterial,
-            coords = (Vector3i)placeAt,
-        };
-
-        saveObjects.Add(wblock);
     }
 
     //Destroy a block at the given index in the gameObject list
@@ -201,7 +259,7 @@ public class BlockPlacer : MonoBehaviour
     {
         blkToRemove.Add(gameObjects[indx]);
         gameObjects.RemoveAt(indx);
-        saveObjects.RemoveAt(indx);
+        CurrentMap.Blocks.RemoveAt(indx);
 
         foreach (GameObject wblk in blkToRemove)
         {
@@ -232,7 +290,7 @@ public class BlockPlacer : MonoBehaviour
         foreach(int j in remove_indexes)
         {
             RemoveBlock(j);
-        }        
+        }
     }
 
     //Fill an area with a paticular block type
@@ -260,6 +318,7 @@ public class BlockPlacer : MonoBehaviour
     //Save the current map
     public void SaveData()
     {
+        /*
         Map save = new Map();
 
         int num_blocks = saveObjects.Count;
@@ -269,16 +328,16 @@ public class BlockPlacer : MonoBehaviour
         {
             save.Blocks[i] = (Block)saveObjects[i];
         }
-
+        */
         //Create json and write to file
-        string js = JsonUtility.ToJson(save);
-        File.WriteAllText("write.txt", js);
+        string js = JsonUtility.ToJson(CurrentMap);
+        File.WriteAllText("saves/world.pscw", js);
     }
-
+    
     //Load a map from json
-    public void LoadData()
+    public void LoadData(string file = "saves/temp")
     {
-        string f = File.ReadAllText("write.txt");
+        string f = File.ReadAllText(file);
         Map save = JsonUtility.FromJson<Map>(f);
 
         //First, remove all the blocks
@@ -289,7 +348,7 @@ public class BlockPlacer : MonoBehaviour
         }
 
         gameObjects = new ArrayList();
-        saveObjects = new ArrayList();
+        //saveObjects = new ArrayList();
         
         //Create the loaded blocks
         foreach(Block w in save.Blocks)
@@ -297,68 +356,10 @@ public class BlockPlacer : MonoBehaviour
             blockMaterial = w.material;
             CreateBlock(w.coords);
         }
+
+        File.Delete(file);
     }
 }
 
-
-//Data for saving for each block
-[Serializable]
-public class Block
-{
-    public string material;
-    public Vector3i coords;
-}
-
-[Serializable]
-public class Ramp
-{
-    public string material;
-    public string direction;
-    public Vector3i coords;
-}
-
-[Serializable]
-public class Rampart
-{
-    public string material;
-    public string direction;
-    public Vector3i coords;
-}
-
-[Serializable]
-public class Turret
-{
-    public string size;
-    public string direction;
-    public string team;
-    public Vector3i coords;
-}
-
-[Serializable]
-public class Fire
-{
-    public string team;
-    public Vector3i coords;
-}
-
-[Serializable]
-public class Spawn
-{
-    public string team;
-    public Vector3i coords;
-}
-
-//Map data + blocks
-[Serializable]
-public class Map
-{
-    public Block[] Blocks;
-    public Ramp[] Ramps;
-    public Rampart[] Ramparts;
-    public Turret[] Turrets;
-    public Fire[] Fires;
-    public Spawn[] Spawns;
-}
-
-//Mickey JP McCargish, Neutral Space, 2017
+//Mickey JP McCargish, Neutral Space, 2017-2018
 //Thanks to https://pastebin.com/140bv3kW for the block placement location code

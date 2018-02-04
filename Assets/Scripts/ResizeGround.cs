@@ -26,6 +26,7 @@ public class ResizeGround : MonoBehaviour {
         if (x >= 20 && a)
         {
             sizeX = x / 10.0f * 1.1f;
+            transform.position = new Vector3(sizeX / .2f, -0.5f, sizeZ / .2f);
             transform.localScale = new Vector3(sizeX, 1, sizeZ);
         }
     }
@@ -38,7 +39,8 @@ public class ResizeGround : MonoBehaviour {
 
         if (z >= 20 && a)
         {
-            sizeZ = z / 10.0f * 1.1f;
+            sizeZ = (z / 10.0f) * 1.1f;
+            transform.position = new Vector3(sizeX / .2f, -0.5f, sizeZ / .2f);
             transform.localScale = new Vector3(sizeX, 1, sizeZ);
         }
     }
