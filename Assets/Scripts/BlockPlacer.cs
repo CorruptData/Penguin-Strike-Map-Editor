@@ -18,7 +18,7 @@ public class BlockPlacer : MonoBehaviour
 
     //Current block data
     private int primary = 0;
-    private string[] sec;
+    private string[] sec = {""};
     private int secondary = 0;
     private string blockMaterial = "Dirt";
     private string blockShape = "Cube";
@@ -66,6 +66,9 @@ public class BlockPlacer : MonoBehaviour
             { "Fire", _team },
             { "Spawn", _team }
         };
+
+        blockShape = _shape[primary];
+        sec = blocks[blockShape];
     }
 
     void Update()
@@ -74,12 +77,12 @@ public class BlockPlacer : MonoBehaviour
         //TODO: Implement fully and properly
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            
+            ChangePrimary();
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
         {
-
+            ChangeSecondary();
         }
 
         //Locks the cursor. Running this in update is only done because of weird unity editor shenanigans with cursor locking
