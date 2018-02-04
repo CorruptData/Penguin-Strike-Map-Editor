@@ -13,6 +13,9 @@ public class BlockPlacer : MonoBehaviour
     //The block prefab to instantiate
     public GameObject blockPrefab;
 
+    private GameObject previewBlock;
+    private bool previewLastHit = false;
+
     //Current block data
     private int primary = 0;
     private string[] sec;
@@ -34,7 +37,6 @@ public class BlockPlacer : MonoBehaviour
 
     //These keep track of the blocks
     private ArrayList gameObjects = new ArrayList();
-    private ArrayList saveObjects = new ArrayList();
     private ArrayList blkToRemove = new ArrayList();
 
     //Undo Tool
@@ -64,7 +66,7 @@ public class BlockPlacer : MonoBehaviour
             { "Fire", _team },
             { "Spawn", _team }
         };
-}
+    }
 
     void Update()
     {
@@ -96,6 +98,11 @@ public class BlockPlacer : MonoBehaviour
         else if (Input.GetMouseButtonDown(1) && lockCursor)
         {
             RMB();
+        }
+
+        else
+        {
+            //BlockPreview();
         }
     }
 
@@ -233,6 +240,36 @@ public class BlockPlacer : MonoBehaviour
         }
     }
 
+    private void BlockPreview()
+    {
+        previewBlock.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, 0f);
+
+        //Make a ray and raycasthit for a raycast
+        Ray ray = new Ray(transform.position, transform.TransformDirection(Vector3.forward));
+        RaycastHit hit;
+
+        //Perform the raycast
+        if (Physics.Raycast(ray, out hit, range))
+        {
+            //The raycast is backed up so that placing works and won't place blocks inside of the ground.
+            //After testing, 0.2 units back had the best result
+            Vector3 backup = ray.GetPoint(hit.distance - 0.2f);
+
+            //Round the placement so they place like blocks should
+            Vector3 placeAt = new Vector3(
+                Mathf.RoundToInt(backup.x),
+                Mathf.RoundToInt(backup.y),
+                Mathf.RoundToInt(backup.z));
+
+            if (blockShape == "Cube")
+            {
+                blockPrefab = Resources.Load("Prefabs/" + blockMaterial + blockShape, typeof(GameObject)) as GameObject;
+            }
+            previewBlock.transform.localPosition = placeAt;
+            previewBlock.GetComponent<MeshRenderer>().material.color = new Color(1f, 1f, 1f, .5f);
+        }
+    }
+
     //Create a block at the given location
     //Uses the block type class-wide
     private void CreateBlock(Vector3 placeAt)
@@ -278,9 +315,9 @@ public class BlockPlacer : MonoBehaviour
 
         ArrayList remove_indexes = new ArrayList();
 
-        for (int i = saveObjects.Count - 1; i >= 0; i--)
+        for (int i = CurrentMap.Blocks.Count - 1; i >= 0; i--)
         {
-            Vector3 blk = ((Block)saveObjects[i]).coords;
+            Vector3 blk = (CurrentMap.Blocks[i]).coords;
             if (blk.x >= min.x && blk.x <= max.x &&
                 blk.y >= min.y && blk.y <= max.y &&
                 blk.z >= min.z && blk.z <= max.z)
