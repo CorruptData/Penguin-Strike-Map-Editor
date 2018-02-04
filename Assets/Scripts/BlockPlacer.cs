@@ -379,7 +379,7 @@ public class BlockPlacer : MonoBehaviour
         */
         //Create json and write to file
         string js = JsonUtility.ToJson(CurrentMap);
-        File.WriteAllText("saves/world.pscw", js);
+        File.WriteAllText("saves/a_world.pscw", js);
     }
     
     //Load a map from json
