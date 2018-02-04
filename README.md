@@ -1,2 +1,2 @@
-# Penguin-Strike-Map-Editor
-Map editor/creator for PS: Cold War
+# Penguin Strike Map Editor
+Map editor/creator for Penguin Strike: Cold War
