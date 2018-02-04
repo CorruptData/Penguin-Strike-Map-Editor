@@ -39,9 +39,10 @@ public class BlockPlacer : MonoBehaviour
 
     //Undo Tool
     //TODO: Not implemented
-    private ArrayList gameObjectsUndo = new ArrayList();
-    private ArrayList saveObjectsUndo = new ArrayList();
-    private int a;
+    private List<Map> UndoMaps = new List<Map>();
+    private int UndoLimit = 50;
+    private int UndoCounter = 0;
+    private int UndoLast = 0;
 
     //Maximum range that the player can place a block from
     public float range = 7f;
@@ -193,6 +194,7 @@ public class BlockPlacer : MonoBehaviour
                     secondFill = false;
                 }
             }
+            CreateUndoState();
         }
     }
     
@@ -235,7 +237,6 @@ public class BlockPlacer : MonoBehaviour
     //Uses the block type class-wide
     private void CreateBlock(Vector3 placeAt)
     {
-
         if (blockShape == "Cube")
         {
             blockPrefab = Resources.Load("Prefabs/" + blockMaterial + blockShape, typeof(GameObject)) as GameObject;
@@ -313,6 +314,16 @@ public class BlockPlacer : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void Undo()
+    {
+        
+    }
+
+    public void CreateUndoState()
+    {
+        
     }
 
     //Save the current map

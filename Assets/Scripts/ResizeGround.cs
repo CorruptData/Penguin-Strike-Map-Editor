@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class ResizeGround : MonoBehaviour {
 
-    private float sizeX = 2.2f;
-    private float sizeZ = 2.2f;
+    private float sizeX = 11f;
+    private float sizeZ = 11f;
 
 	// Use this for initialization
 	void Start () {
@@ -23,11 +23,13 @@ public class ResizeGround : MonoBehaviour {
         int x = 0;
         bool a = int.TryParse(s, out x);
 
-        if (x >= 20 && a)
+        if (x >= 10 && a)
         {
-            sizeX = x / 10.0f * 1.1f;
-            transform.position = new Vector3(sizeX / .2f, -0.5f, sizeZ / .2f);
+            sizeX = x / 10.0f;
+            transform.position = new Vector3((sizeX * 5)-0.5f, -0.5f, (sizeZ * 5)-0.5f);
             transform.localScale = new Vector3(sizeX, 1, sizeZ);
+
+            this.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(sizeX * 10, sizeZ * 10);
         }
     }
 
@@ -37,11 +39,13 @@ public class ResizeGround : MonoBehaviour {
         int z = 0;
         bool a = int.TryParse(s, out z);
 
-        if (z >= 20 && a)
+        if (z >= 10 && a)
         {
-            sizeZ = (z / 10.0f) * 1.1f;
-            transform.position = new Vector3(sizeX / .2f, -0.5f, sizeZ / .2f);
+            sizeZ = z / 10.0f;
+            transform.position = new Vector3((sizeX * 5) - 0.5f, -0.5f, (sizeZ * 5) - 0.5f);
             transform.localScale = new Vector3(sizeX, 1, sizeZ);
+
+            this.GetComponent<MeshRenderer>().material.mainTextureScale = new Vector2(sizeX * 10, sizeZ * 10);
         }
     }
 
